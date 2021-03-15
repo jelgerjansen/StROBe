@@ -8,7 +8,7 @@ Created on Wed Oct 09 11:57:02 2013
 import numpy as np
 import random
 
-import data
+import Corpus.data as data
 
 
 def get_probability(rnd, prob, p_type='cum'):

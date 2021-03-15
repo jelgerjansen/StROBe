@@ -5,7 +5,7 @@ Created on Mon Feb 24 11:39:35 2014
 @author: Ruben
 """
 
-import residential
+import Corpus.residential as residential
 import _pickle as cPickle
 import numpy as np
 import os

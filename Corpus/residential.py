@@ -15,8 +15,8 @@ import os
 import _pickle as cPickle
 import itertools
 
-import stats
-import data
+import Corpus.stats as stats
+import Corpus.data as data
 
 sys.path.append("..")
 from Data.Households import households
@@ -161,9 +161,9 @@ class Household(object):
 
         # output to info file
         with open(self.path + 'info.txt', 'w') as outfile:
-            print >> outfile, ' - Household size is ;%s;' % str(len(self.members))
-            print >> outfile, ' - Employment types are ;%s;' % str(self.members)
-            print >> outfile, ' - Set of clusters is %s' % str(list(set(summary)))
+            print(' - Household size is ;%s;' % str(len(self.members)), file=outfile)
+            print(' - Employment types are %s' % str(self.members), file=outfile)
+            print(' - Set of clusters is %s' % str(list(set(summary))), file=outfile)
         return None
 
     def simulate(self, year=2013, ndays=365):
@@ -357,8 +357,8 @@ class Household(object):
         print('\tbeing {:.1f} percent)'.format(hours*100/(self.nday*24)))
 
         with open(self.path + 'info.txt', 'a') as outfile:
-            print >> outfile, ' - Total presence time is ;%s; out of 8760 hours' % str(hours)
-            print >> outfile, '   (being ;%s; percent)' % str(hours * 100 / 8760)
+            print(' - Total presence time is %s out of 8760 hours' % str(hours), file=outfile)
+            print('   (being %s percent)' % str(hours * 100 / 8760), file=outfile)
 
         return None
 
@@ -409,7 +409,7 @@ class Household(object):
             load = int(np.sum(result['P'])/60/1000)
             print(' - Receptacle load is %s kWh' % str(load))
             with open(self.path + 'info.txt', 'a') as outfile:
-                print >> outfile, ' - Receptacle load is ;%s; kWh' % str(load)
+                print(' - Receptacle load is %s kWh' % str(load), file=outfile)
 
             return None
 
@@ -433,7 +433,7 @@ class Household(object):
             # so that it coincides with the occupancy data!!! (the first 4 h are moved to the end) 
             # the first 4 h are moved to the end.
             cdir = os.getcwd()
-            irr = np.loadtxt(cdir + '/Data/Climate/irradiance.txt', 'r')
+            irr = np.loadtxt(cdir + '/Data/Climate/irradiance.txt')
             irr=np.insert(irr,1,irr[-24*60:]) # add december 31 to start of year (for extra day used to fill first 4h)
             irr=np.append(irr,irr[-24*60:]) # add december 31 to end of year in case of leap year
             irr = np.roll(irr,-240) # brings first 4h to end, to match start of occupancy at 4 AM instead of midnight
@@ -485,7 +485,7 @@ class Household(object):
             load = int(np.sum(result['P'])/60/1000)
             print(' - Lighting load is %s kWh' % str(load))
             with open(self.path + 'info.txt', 'a') as outfile:
-                print >> outfile, ' - Lighting load is ;%s; kWh' % str(load)
+                print(' - Lighting load is %s kWh' % str(load), file=outfile)
 
             return None
 
@@ -529,7 +529,7 @@ class Household(object):
         loadpppd = int(load/self.nday/len(self.clustersList))
         print(' - Draw-off is %s l/p.day' % str(loadpppd))
         with open(self.path + 'info.txt', 'a') as outfile:
-            print >> outfile, ' - Draw-off is ;%s; l/pp.day' % str(loadpppd)
+            print(' - Draw-off is %s l/pp.day' % str(loadpppd), file=outfile)
  
         return None
 
@@ -596,10 +596,10 @@ class Household(object):
                                 'sh_night': 'Space heating set-point temperature for night-zone in degrees Celsius.'})
 
         with open(self.path  + 'info.txt', 'a') as outfile:
-            print >> outfile, ' - Space heating pattern {}, heating {}'.format(shtype, shrooms)
-            print >> outfile, ' - Average comfort setting for day zone is ;%s; Celsius' % str(round(np.average(sh_settings['dayzone']), 2))
-            print >> outfile, ' - Average comfort setting for night zone is ;%s; Celsius' % str(round(np.average(sh_settings['nightzone']), 2))
-            print >> outfile, ' - Average comfort setting for bathroom is ;%s; Celsius' % str(round(np.average(sh_settings['bathroom']), 2))
+            print(' - Space heating pattern {}, heating {}'.format(shtype, shrooms), file=outfile)
+            print(' - Average comfort setting for day zone is %s Celsius' % str(round(np.average(sh_settings['dayzone']), 2)), file=outfile)
+            print(' - Average comfort setting for night zone is %s Celsius' % str(round(np.average(sh_settings['nightzone']), 2)), file=outfile)
+            print(' - Average comfort setting for bathroom is %s Celsius' % str(round(np.average(sh_settings['bathroom']), 2)), file=outfile)
 
         return None
 

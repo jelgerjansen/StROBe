@@ -7,7 +7,7 @@ Created on Thu Feb 06 09:48:07 2014
 
 import os
 import numpy as np
-import stats
+import Corpus.stats as stats
 
 def get_clusters(employment, **kwargs):
     '''
