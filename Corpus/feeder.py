@@ -43,7 +43,7 @@ class IDEAS_Feeder(object):
         # whereas the output is done later-on.
         cwd = os.getcwd()
         for i in range(self.nBui):
-            hou = residential.Household(str(self.name)+'_'+str(i))
+            hou = residential.Household(str(self.name) + '_' + str(i), path=path)
             hou.simulate()
             os.chdir(path)
             hou.pickle()
@@ -81,7 +81,7 @@ class IDEAS_Feeder(object):
         print('writing')
         for variable in variables.keys():
             print(variable)
-            tim = np.linspace(0,31536000,dat[variable].shape[1]) # create time column (always annual simulation=default)
+            tim = np.linspace(0, 31536000,dat[variable].shape[0])  # create time column (always annual simulation=default)
             data = np.vstack((tim,dat[variable]))
             # print as header the necessary for IDEAS, plus explanation for each variable
             hea ='#1 \ndouble data('+str(int(data.shape[1]))+','+str(int(data.shape[0]))+') \n#' + variables[variable]

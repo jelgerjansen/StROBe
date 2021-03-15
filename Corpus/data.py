@@ -16,8 +16,8 @@ def get_clusters(employment, **kwargs):
     # http://homepages.vub.ac.be/~daerts/Occupancy.html
     '''
     #first go the the correct location
-    cdir = os.getcwd()
-    PATH = '../Data/Aerts_Occupancy/Crosstables/'
+    cdir = os.path.dirname(os.path.dirname(__file__))  # if your file is at /Users/hobbes3/Sites/mysite/templates/method.py, This will return "/Users/hobbes3/Sites/mysite"
+    PATH = cdir + '/Data/Aerts_Occupancy/Crosstables/'
     os.chdir(PATH)
     #create an empty dictionary
     keys = ['wkdy', 'sat', 'son']
@@ -45,7 +45,7 @@ def get_occDict(cluster, **kwargs):
     '''
     #first go the the correct location
     cdir = os.getcwd()
-    DATA_PATH = '../Data/Aerts_Occupancy'
+    DATA_PATH = cdir + '/Data/Aerts_Occupancy'
     PATH = DATA_PATH + '/Pattern' + str(cluster)
     os.chdir(PATH)
     # create an empty dictionary
@@ -90,7 +90,7 @@ def get_actDict(cluster, **kwargs):
     '''
     #first go the the correct location
     cdir = os.getcwd()
-    DATA_PATH = '../Data/Aerts_Activities'
+    DATA_PATH = cdir + '/Data/Aerts_Activities'
     os.chdir(DATA_PATH)
     # create an empty dictionary
     actDict = dict()

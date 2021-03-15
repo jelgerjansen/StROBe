@@ -32,8 +32,8 @@ class Household(object):
         - __init__(), which creates and parameterizes a new household, defining the members and appliances of the household.
         - self.simulate(), which runs a simulation of occupancy, plug loads, lighting loads, hot water tappings and space heating settings for the specified year.
     '''
-          
-    def __init__(self, name, **kwargs):
+
+    def __init__(self, name, path, **kwargs):
         '''
         Initiation of Household object.
         '''
@@ -48,6 +48,7 @@ class Household(object):
         # first define the name of the household object
         self.creation = time.asctime()
         self.name = name
+        self.path = path
         self.parameterize(**kwargs)
         self.variables=dict() # dictionary with explanation of main outputs, filled in in submodules
 
@@ -71,8 +72,17 @@ class Household(object):
                     raise TypeError('Given membertypes is no List of strings.')
             # If no types are given, random statististics are applied
             else:
-                key = random.randint(1, len(households))
-                members = households[key]
+                choose_particular_household_size = False
+                if choose_particular_household_size:
+                    household_size = 0
+                    while household_size != 5:
+                        key = random.randint(1, len(households))
+                        members = households[key]
+                        household_size = len(members)
+                else:
+                    key = random.randint(1, len(households))
+                    members = households[key]
+                    household_size = len(members)
             # And return the members as list fo strings
             return members
 
@@ -149,6 +159,11 @@ class Household(object):
             summary += member.values()
         print(' - Set of clusters is %s' % str(list(set(summary))))
 
+        # output to info file
+        with open(self.path + 'info.txt', 'w') as outfile:
+            print >> outfile, ' - Household size is ;%s;' % str(len(self.members))
+            print >> outfile, ' - Employment types are ;%s;' % str(self.members)
+            print >> outfile, ' - Set of clusters is %s' % str(list(set(summary)))
         return None
 
     def simulate(self, year=2013, ndays=365):
@@ -340,6 +355,11 @@ class Household(object):
         hours = len(presence)/6.
         print(' - Total presence time is {0:.1f} out of {1} hours'.format(hours, self.nday*24))
         print('\tbeing {:.1f} percent)'.format(hours*100/(self.nday*24)))
+
+        with open(self.path + 'info.txt', 'a') as outfile:
+            print >> outfile, ' - Total presence time is ;%s; out of 8760 hours' % str(hours)
+            print >> outfile, '   (being ;%s; percent)' % str(hours * 100 / 8760)
+
         return None
 
     def __plugload__(self):
@@ -388,6 +408,8 @@ class Household(object):
             # only the power load is returned
             load = int(np.sum(result['P'])/60/1000)
             print(' - Receptacle load is %s kWh' % str(load))
+            with open(self.path + 'info.txt', 'a') as outfile:
+                print >> outfile, ' - Receptacle load is ;%s; kWh' % str(load)
 
             return None
 
@@ -409,8 +431,9 @@ class Household(object):
             # and one at the end in case of a leap year.
             # Furthermore, the data starts at midnight, so a shift to 4am is necessary
             # so that it coincides with the occupancy data!!! (the first 4 h are moved to the end) 
-            os.chdir(r'../Data')
-            irr = np.loadtxt('Climate/irradiance.txt')
+            # the first 4 h are moved to the end.
+            cdir = os.getcwd()
+            irr = np.loadtxt(cdir + '/Data/Climate/irradiance.txt', 'r')
             irr=np.insert(irr,1,irr[-24*60:]) # add december 31 to start of year (for extra day used to fill first 4h)
             irr=np.append(irr,irr[-24*60:]) # add december 31 to end of year in case of leap year
             irr = np.roll(irr,-240) # brings first 4h to end, to match start of occupancy at 4 AM instead of midnight
@@ -461,7 +484,9 @@ class Household(object):
 
             load = int(np.sum(result['P'])/60/1000)
             print(' - Lighting load is %s kWh' % str(load))
-            
+            with open(self.path + 'info.txt', 'a') as outfile:
+                print >> outfile, ' - Lighting load is ;%s; kWh' % str(load)
+
             return None
 
         receptacles(self)
@@ -503,6 +528,8 @@ class Household(object):
         load = np.sum(result['mDHW'])
         loadpppd = int(load/self.nday/len(self.clustersList))
         print(' - Draw-off is %s l/p.day' % str(loadpppd))
+        with open(self.path + 'info.txt', 'a') as outfile:
+            print >> outfile, ' - Draw-off is ;%s; l/pp.day' % str(loadpppd)
  
         return None
 
@@ -567,7 +594,13 @@ class Household(object):
         self.variables.update({'sh_day': 'Space heating set-point temperature for day-zone in degrees Celsius.',
                                 'sh_bath': 'Space heating set-point temperature for bathroom in degrees Celsius.',
                                 'sh_night': 'Space heating set-point temperature for night-zone in degrees Celsius.'})
-     
+
+        with open(self.path  + 'info.txt', 'a') as outfile:
+            print >> outfile, ' - Space heating pattern {}, heating {}'.format(shtype, shrooms)
+            print >> outfile, ' - Average comfort setting for day zone is ;%s; Celsius' % str(round(np.average(sh_settings['dayzone']), 2))
+            print >> outfile, ' - Average comfort setting for night zone is ;%s; Celsius' % str(round(np.average(sh_settings['nightzone']), 2))
+            print >> outfile, ' - Average comfort setting for bathroom is ;%s; Celsius' % str(round(np.average(sh_settings['bathroom']), 2))
+
         return None
 
     def roundUp(self):
