@@ -64,7 +64,7 @@ def delete_spaces(resultpath):
 def rename_files(resultpath=None):
     """ This function renames the output-files and moves them to the upper-level folder.
     Subsequently, the lower-level folder are deleted.
-    Finally, the sh_bath.txt-files are removed, as we don't need the temperature setpoints for bathrooms.
+    Finally, the sh_bath.txt, P.txt and Q.txt-files are removed, as we don't need these for the Modelica simulations.
     """
     if resultpath is None:
         resultpath = "C:/Users/u0132350/Documents/StROBe/"
@@ -81,14 +81,18 @@ def rename_files(resultpath=None):
         for filename in outputfiles:
             old_filename = filename
             new_filename = outputdir + "_" + filename
-            os.rename(resultpath+outputdir+"/"+old_filename, resultpath+"/"+new_filename)
+            if not os.path.exists(resultpath+"/"+new_filename):
+                os.rename(resultpath+outputdir+"/"+old_filename, resultpath+"/"+new_filename)
+            else: # this will overwrite the existing files (from a previous simulation)
+                os.remove(resultpath+"/"+new_filename)
+                os.rename(resultpath+outputdir+"/"+old_filename, resultpath+"/"+new_filename)
         try:
-            shutil.rmtree(resultpath+"/"+outputdir)
+            shutil.rmtree(resultpath+"/"+outputdir, ignore_errors=False)
         except:
             pass
-    # remove sh_bath as we will never implement bathrooms
+    # remove sh_bath, P and Q as we will not use these in this project.
     files_to_remove = [file for file in os.listdir(resultpath) if
-                   file.endswith("sh_bath.txt")]
+                       file.endswith("_sh_bath.txt") or file.endswith("_P.txt") or file.endswith("_Q.txt")]
     for file in files_to_remove:
         os.remove(resultpath + file)
 
@@ -250,12 +254,12 @@ if __name__ == '__main__':
     '''rename_ids(resultpath=resultpath)#'''
     # However, there will be some files with setpoints at 12 degC. So you have to detect these. There will be printed out a list with wrong profiles.
     # You have to copy paste this list and remove these profiles.
-    check_strobe_profiles(strobe_path = resultpath)#
+    '''check_strobe_profiles(strobe_path = resultpath)#'''
     # Remove these profiles
-    remove_profiles(ids = ['2'], strobe_path = resultpath)#
+    '''remove_profiles(ids = ['2'], strobe_path = resultpath)#'''
     # However, now there are gaps in the IDs, so rerun this function to you have the proper numbering of the profiles
-    rename_ids(resultpath = resultpath)#
+    '''rename_ids(resultpath = resultpath)'''#
     # Move profiles to TEASER
-    #move_profiles(oldpath="C:/Users/u0132350/Documents/Profiles/", newpath="D:\Ina\TEASER/teaser\data\input\inputdata\occupancydata/")
+    '''move_profiles(oldpath="C:/Users/u0132350/Documents/Profiles/", newpath="D:\Ina\TEASER/teaser\data\input\inputdata\occupancydata/")'''
 
     print("Done with generating profiles :)")
