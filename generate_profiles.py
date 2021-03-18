@@ -246,7 +246,7 @@ def move_profiles(oldpath="C:/Users/u0132350/Documents/StROBe/Profiles/", newpat
 if __name__ == '__main__':
     resultpath = "C:/Users/u0132350/Documents/StROBe/Profiles/"
     # First generate multiple profiles. In the process, they will be in separate folders, but by the end, they are moved to 1 folder
-    generate_multiple_profiles(number_of_profiles = 3, resultpath = resultpath)#
+    generate_multiple_profiles(number_of_profiles = 1, resultpath = resultpath)#
     # If you had a small error or so and it did not finish properly, then you can move the profile by using this function
     '''rename_files(resultpath= resultpath)#'''
     # After that, you want to have the proper IDs. So, you detect the household size and put them in 1 folder per household size.

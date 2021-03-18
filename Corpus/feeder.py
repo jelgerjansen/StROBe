@@ -61,12 +61,20 @@ class IDEAS_Feeder(object):
         # first load one house and grab dictionary of variables: 
         hou = cPickle.load(open(str(self.name)+'_0.p','rb'))
         variables=hou.variables # dictionary with explanation of main outputs
-        dat=dict.fromkeys(variables.keys(),[]) 
+        dat=dict.fromkeys(variables.keys(),[])
         for i in range(self.nBui): # loop over all households
             #print(i)
             hou = cPickle.load(open(str(self.name)+'_'+str(i)+'.p','rb')) #load results
-            for variable in variables.keys(): #loop over variables       
+            for variable in variables.keys(): #loop over variables
                 var = eval('hou.'+variable)
+                if len(var)==525601: # if per minute data, make it per 60 min (mDHW, P, Q, QCon, QRad)
+                    # first point is the existing one for minute 0 (midnight), and the following are averages of previous 60 minutes
+                    var=np.append(var[0],var[1:].reshape(-1,60).mean(axis=-1)) # moving average: mean of every 60 points
+                if len(var)==52561: # if per 10 minute data, make it per 60 min (sh_day, sh_night, sh_bath)
+                    # option 1: first point is the existing one for minute 0 (midnight), and the following are averages of previous 60 minutes
+                    # var = np.append(var[0],var[1:].reshape(-1,6).mean(axis=-1))  # moving average: mean of every 6 points
+                    # option 2: the setpoint of the first 10 minutes is assumed to be constant for the entire hour (instead of using an average value)
+                    var = np.append(var[0],var[1:].reshape(-1,6)[:,0])
                 if variable in ['sh_day','sh_bath','sh_night'] and self.sh_K: # if space heating setting and Kelvin required
                     variables[variable]=variables[variable].replace("Celsius", "Kelvin") # change variable explanation
                     var=var+273.15 # make it in Kelvin
