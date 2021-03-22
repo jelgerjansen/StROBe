@@ -132,30 +132,30 @@ class IDEAS_Feeder(object):
         print('writing')
         for variable in variables.keys():
             print(variable)
-            tim = np.linspace(0, 31536000,dat[variable].shape[1])  # create time column (always annual simulation=default)
+            tim = np.linspace(0, 31536000,dat[variable].shape[-1])  # create time column (always annual simulation=default)
             data = np.vstack((tim,dat[variable]))
             # print as header the necessary for IDEAS, plus explanation for each variable
             hea ='#1 \ndouble data('+str(int(data.shape[1]))+','+str(int(data.shape[0]))+') \n#' + variables[variable]
             np.savetxt(fname=variable+'.txt', X=data.T, header=hea,comments='', fmt='%.7g')
 
         # save occupancy profiles and print as header the necessary for IDEAS, plus explanation for each variable
-        tim = np.linspace(0, 31536000,occ.shape[1])
+        tim = np.linspace(0, 31536000,occ.shape[-1])
         data = np.vstack((tim,occ))
         hea = '#1 \ndouble data('+str(int(data.shape[1]))+','+str(int(data.shape[0]))+') \n#' + 'Occupancy profiles (absent=3, sleeping=2, present & active=1)'
         np.savetxt(fname='occupancy.txt', X=data.T, header=hea, comments='', fmt='%.7g')
-        tim = np.linspace(0, 31536000,QMet.shape[2])
+        tim = np.linspace(0, 31536000,QMet.shape[-1])
         data = np.vstack((tim,QMet[0,:,:]))
         hea = '#1 \ndouble data('+str(int(data.shape[1]))+','+str(int(data.shape[0]))+') \n#' + 'Convective metabolic heat gains in the day zone in W'
         np.savetxt(fname='QConMet_day.txt', X=data.T, header=hea, comments='', fmt='%.7g')
-        tim = np.linspace(0, 31536000,QMet.shape[2])
+        tim = np.linspace(0, 31536000,QMet.shape[-1])
         data = np.vstack((tim,QMet[1,:,:]))
         hea = '#1 \ndouble data('+str(int(data.shape[1]))+','+str(int(data.shape[0]))+') \n#' + 'Radiative metabolic heat gains in the day zone in W'
         np.savetxt(fname='QRadMet_day.txt', X=data.T, header=hea, comments='', fmt='%.7g')
-        tim = np.linspace(0, 31536000,QMet.shape[2])
+        tim = np.linspace(0, 31536000,QMet.shape[-1])
         data = np.vstack((tim,QMet[2,:,:]))
         hea = '#1 \ndouble data('+str(int(data.shape[1]))+','+str(int(data.shape[0]))+') \n#' + 'Convective metabolic heat gains in the night zone in W'
         np.savetxt(fname='QConMet_night.txt', X=data.T, header=hea, comments='', fmt='%.7g')
-        tim = np.linspace(0, 31536000,QMet.shape[2])
+        tim = np.linspace(0, 31536000,QMet.shape[-1])
         data = np.vstack((tim,QMet[3,:,:]))
         hea = '#1 \ndouble data('+str(int(data.shape[1]))+','+str(int(data.shape[0]))+') \n#' + 'Radiative metabolic heat gains in the night zone in W'
         np.savetxt(fname='QRadMet_night.txt', X=data.T, header=hea, comments='', fmt='%.7g')
