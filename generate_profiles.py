@@ -92,7 +92,8 @@ def rename_files(resultpath=None):
             pass
     # remove sh_bath, P and Q as we will not use these in this project.
     files_to_remove = [file for file in os.listdir(resultpath) if
-                       file.endswith("_sh_bath.txt") or file.endswith("_P.txt") or file.endswith("_Q.txt")]
+                       file.endswith("_sh_bath.txt") or file.endswith("_P.txt") or file.endswith("_Q.txt")
+                       or file.endswith("_sh_bath_opt.txt") or file.endswith("_P_opt.txt") or file.endswith("_Q_opt.txt")]
     for file in files_to_remove:
         os.remove(resultpath + file)
 

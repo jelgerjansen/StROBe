@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$USER_HOME$/Box Sync/Python/.idea/Python.iml" filepath="$USER_HOME$/Box Sync/Python/.idea/Python.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/StROBe.iml" filepath="$PROJECT_DIR$/.idea/StROBe.iml" />
     </modules>
   </component>
