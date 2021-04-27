@@ -6,14 +6,17 @@ import pandas as pd
 import numpy as np
 import random
 
-def generate_profiles ():
+
+def generate_profiles():
     """This function ..."""
-    kwargs = {'members':['FTE','FTE']}
-    family = Household("Example family", **kwargs) #alternative: family = Household("ex", members=["FTE"])
+    kwargs = {'members': ['FTE', 'FTE']}
+    # alternative: family = Household("ex", members=["FTE"])
+    family = Household("Example family", **kwargs)
     family.parameterize()
     family.simulate()
 
     IDEAS_Feeder('Example', 1, "C:/Users/u0132350/Documents/GIT/occupant_profiles")
+
 
 def generate_profiles_known_household():
     """This function ..."""
@@ -23,7 +26,8 @@ def generate_profiles_known_household():
 
     IDEAS_Feeder('Example1', 1, "C:/Users/u0132350/Documents/GIT/occupant_profiles")
 
-def generate_multiple_profiles(number_of_profiles = 2000, resultpath = "C:/Users/u0132350/Documents/StROBe_profiles/"):
+
+def generate_multiple_profiles(number_of_profiles=2000, resultpath="C:/Users/u0132350/Documents/StROBe_profiles/"):
     """ This function generates a predefined number of profiles and saves them to the predefined resultpath.
     The profiles are in the format: number_P.txt, number_Q.txt etc. This makes them valid as an input for teaser.
     You can copy-paste them to the occupancy-data-folder.
@@ -44,6 +48,7 @@ def generate_multiple_profiles(number_of_profiles = 2000, resultpath = "C:/Users
         index += 1
     rename_files(resultpath)
 
+
 def delete_spaces(resultpath):
     """ This function deletes the # in the first two lines of the output-files,
         otherwise the strobe info manager can't read the profiles.
@@ -52,7 +57,7 @@ def delete_spaces(resultpath):
     """
     resultpath = resultpath
     outputfiles = [file for file in os.listdir(resultpath) if
-                        file.endswith(".txt")]
+                   file.endswith(".txt")]
     for outputfile in outputfiles:
         with open(resultpath+outputfile, 'r') as file:
             filedata = file.read()
@@ -60,6 +65,7 @@ def delete_spaces(resultpath):
         filedata = filedata.replace("#   ", "")
         with open(resultpath+outputfile, 'w') as file:
             file.write(filedata)
+
 
 def rename_files(resultpath=None):
     """ This function renames the output-files and moves them to the upper-level folder.
@@ -83,7 +89,7 @@ def rename_files(resultpath=None):
             new_filename = outputdir + "_" + filename
             if not os.path.exists(resultpath+"/"+new_filename):
                 os.rename(resultpath+outputdir+"/"+old_filename, resultpath+"/"+new_filename)
-            else: # this will overwrite the existing files (from a previous simulation)
+            else:  # this will overwrite the existing files (from a previous simulation)
                 os.remove(resultpath+"/"+new_filename)
                 os.rename(resultpath+outputdir+"/"+old_filename, resultpath+"/"+new_filename)
         try:
@@ -92,10 +98,13 @@ def rename_files(resultpath=None):
             pass
     # remove sh_bath, P and Q as we will not use these in this project.
     files_to_remove = [file for file in os.listdir(resultpath) if
-                       file.endswith("_sh_bath.txt") or file.endswith("_P.txt") or file.endswith("_Q.txt")
-                       or file.endswith("_sh_bath_opt.txt") or file.endswith("_P_opt.txt") or file.endswith("_Q_opt.txt")]
+                       file.endswith("_sh_bath.txt") or file.endswith("_sh_bath_opt.txt")
+                       # or file.endswith("_P.txt") or file.endswith("_Q.txt")
+                       # or file.endswith("_P_opt.txt") or file.endswith("_Q_opt.txt")
+                       ]
     for file in files_to_remove:
         os.remove(resultpath + file)
+
 
 def rename_ids(resultpath=None):
     """ This function renames the output-files and moves them to the upper-level folder.
@@ -107,21 +116,23 @@ def rename_ids(resultpath=None):
     else:
         resultpath = resultpath
     # list all output folders
-    outputfiles= [file for file in os.listdir(resultpath) if os.path.isfile(resultpath+file) and file.endswith("_info.txt") ]
+    outputfiles = [file for file in os.listdir(resultpath) if os.path.isfile(
+        resultpath+file) and file.endswith("_info.txt")]
     # rename every text file in output folder and move to upper level folder, then remove lower level folder
     for outputfile in outputfiles:
         # Get strobe ID and get info file
         strobe_id = outputfile.split("_info.txt")[0]
         info = pd.read_csv(resultpath+outputfile, sep=";", header=None)
         # Get household size and create directory to put all profiles of this household size in
-        household_size = info.iloc[0,1]
+        household_size = info.iloc[0, 1]
         resultpath_new = resultpath + str(household_size) + "/"
         if not os.path.exists(resultpath_new):
             os.makedirs(resultpath_new)
         # Replace files into folders (the folder name is the number of occupants)
-        files = ['_info.txt', '_mDHW.txt', '_P.txt', '_Q.txt', '_QCon.txt', '_QRad.txt', '_sh_day.txt', '_sh_night.txt']
+        files = ['_info.txt', '_mDHW.txt', '_P.txt', '_Q.txt',
+                 '_QCon.txt', '_QRad.txt', '_sh_day.txt', '_sh_night.txt']
         for file in files:
-            os.rename(resultpath+strobe_id+file, resultpath_new+strobe_id+file) # """
+            os.rename(resultpath+strobe_id+file, resultpath_new+strobe_id+file)  # """
 
     # List number of profiles for every household number
     household_sizes = [size for size in os.listdir(resultpath) if os.path.isdir(resultpath+size)]
@@ -129,10 +140,12 @@ def rename_ids(resultpath=None):
     household_size_dict = dict()
     for size in household_sizes:
         if int(size) < 10:
-            profiles = [file for file in os.listdir(resultpath+size+"/") if os.path.isfile(resultpath+size+"/"+file) and file.endswith("_info.txt") ]
+            profiles = [file for file in os.listdir(
+                resultpath+size+"/") if os.path.isfile(resultpath+size+"/"+file) and file.endswith("_info.txt")]
             profile_ids = [id.split("_info.txt")[0] for id in profiles]
             household_size_dict[int(size)] = len(profiles)
-            print("For the households with " + str(size) + " people, we have " + str(len(profiles)) + " profiles.")
+            print("For the households with " + str(size) +
+                  " people, we have " + str(len(profiles)) + " profiles.")
             for index, profile_id in enumerate(profile_ids):
                 id_old = profile_id
                 if len(str(index)) == 1:
@@ -143,9 +156,11 @@ def rename_ids(resultpath=None):
                     id_new = size + "0" + str(index)
                 elif len(str(index)) == 4:
                     id_new = size + str(index)
-                files = ['_info.txt', '_mDHW.txt', '_P.txt', '_Q.txt', '_QCon.txt', '_QRad.txt', '_sh_day.txt', '_sh_night.txt']
+                files = ['_info.txt', '_mDHW.txt', '_P.txt', '_Q.txt',
+                         '_QCon.txt', '_QRad.txt', '_sh_day.txt', '_sh_night.txt']
                 for file in files:
-                    os.rename(resultpath + size + "/" + id_old + file, resultpath + id_new + file)#"""
+                    os.rename(resultpath + size + "/" + id_old +
+                              file, resultpath + id_new + file)  # """
     print(household_size_dict)
     # At this point, the profiles are re-ordered. The first number is the number of occupants. Then, the specific ID follows (is reordered from zero to ...).
 
@@ -166,71 +181,88 @@ def rename_ids(resultpath=None):
                 os.makedirs(resultpath_new)
             os.rename(resultpath+file, resultpath_new+id)#"""
 
-def check_strobe_profiles(strobe_path = "C:/Users/u0132350/Documents/StROBe_profiles/"):
+
+def check_strobe_profiles(strobe_path="C:/Users/u0132350/Documents/StROBe_profiles/"):
     info_files = [file for file in os.listdir(strobe_path) if file.endswith("_mDHW.txt")]
     file_ids = [file.split("_")[0] for file in info_files]
     number_of_profiles = len(file_ids)
     print(file_ids)
-    profiles_to_remove=[]
+    profiles_to_remove = []
     print("Total number of profiles: " + str(number_of_profiles))
     print("CHECK DAY ZONE AVERAGE TEMPERATURE")
     dayzone_check = 0.0
     for file in file_ids:
         # Import sh_day and calculate average
-        df_setpoint = pd.read_csv(strobe_path+file+"_sh_day.txt", sep = " ", index_col=0, skiprows=2, usecols=[0,1])
+        df_setpoint = pd.read_csv(strobe_path+file+"_sh_day.txt", sep=" ",
+                                  index_col=0, skiprows=2, usecols=[0, 1])
         df_setpoint.columns = ['setpoint']
-        if df_setpoint.shape[0] == 35040 or df_setpoint.shape[0] == 52561: #35040 if sampled with 900s, 52561 if sampled with 600s
+        # 35040 if sampled with 900s, 52561 if sampled with 600s
+        if df_setpoint.shape[0] == 35040 or df_setpoint.shape[0] == 52561:
             pass
         else:
-            print("    Profile " + file + " has an incorrect length considering sampled at 600 or at 900 seconds")
+            print("    Profile " + file +
+                  " has an incorrect length considering sampled at 600 or at 900 seconds")
 
         average_setpoint = df_setpoint.mean()[0]
         if average_setpoint > 15.0:
             pass
         else:
-            print("    Profile " + file + " has average setpoint for day zone of " + str(average_setpoint) + ", which is thus lower than 15 degC")
+            print("    Profile " + file + " has average setpoint for day zone of " +
+                  str(average_setpoint) + ", which is thus lower than 15 degC")
             profiles_to_remove.append(file)
             dayzone_check += 1
-    print(str(dayzone_check) + " out of " + str(number_of_profiles) + " profiles have an unheated day zone, being " + str(round(dayzone_check/number_of_profiles*100,0)) + " percent")
+    print(str(dayzone_check) + " out of " + str(number_of_profiles) + " profiles have an unheated day zone, being " +
+          str(round(dayzone_check/number_of_profiles*100, 0)) + " percent")
     print(profiles_to_remove)
     print("CHECK NIGHT ZONE AVERAGE TEMPERATURE")
     nightzone_check = 0.0
     for file in file_ids:
-        df_setpoint = pd.read_csv(strobe_path + file + "_sh_night.txt", sep=" ", index_col=0, skiprows=2, usecols=[0,1])
+        df_setpoint = pd.read_csv(strobe_path + file + "_sh_night.txt",
+                                  sep=" ", index_col=0, skiprows=2, usecols=[0, 1])
         df_setpoint.columns = ['setpoint']
-        if df_setpoint.shape[0] == 35040 or df_setpoint.shape[0] == 52561: #35040 if sampled with 900s, 52561 if sampled with 600s
+        # 35040 if sampled with 900s, 52561 if sampled with 600s
+        if df_setpoint.shape[0] == 35040 or df_setpoint.shape[0] == 52561:
             pass
         else:
-            print("    Profile " + file + " has an incorrect length considering sampled at 600 or at 900 seconds")
+            print("    Profile " + file +
+                  " has an incorrect length considering sampled at 600 or at 900 seconds")
 
         average_setpoint = df_setpoint.mean()[0]
         if average_setpoint < 15.0:
             pass
         else:
-            print("    Profile " + file + " has average setpoint for night zone of " + str(average_setpoint) + ", which means the night zone is heated")
+            print("    Profile " + file + " has average setpoint for night zone of " +
+                  str(average_setpoint) + ", which means the night zone is heated")
             nightzone_check += 1
-    print(str(nightzone_check) + " out of " + str(number_of_profiles) + " profiles have a heated night zone, being " + str(round(nightzone_check/number_of_profiles*100,1)) + " percent")
+    print(str(nightzone_check) + " out of " + str(number_of_profiles) + " profiles have a heated night zone, being " +
+          str(round(nightzone_check/number_of_profiles*100, 1)) + " percent")
 
     print("CHECK HOW WATER TAPPING")
     dhw_check = 0.0
     for file in file_ids:
-        df_setpoint = pd.read_csv(strobe_path + file + "_mDHW.txt", sep=" ", index_col=0, skiprows=2, usecols=[0,1])
+        df_setpoint = pd.read_csv(strobe_path + file + "_mDHW.txt", sep=" ",
+                                  index_col=0, skiprows=2, usecols=[0, 1])
         df_setpoint.columns = ['flow']
-        if df_setpoint.shape[0] == 35040 or df_setpoint.shape[0] == 52561 or df_setpoint.shape[0] == 525601: #35040 if sampled with 900s, 52561 if sampled with 600s, 525601 if sampled with 60 s
+        # 35040 if sampled with 900s, 52561 if sampled with 600s, 525601 if sampled with 60 s
+        if df_setpoint.shape[0] == 35040 or df_setpoint.shape[0] == 52561 or df_setpoint.shape[0] == 525601:
             pass
         else:
-            print("    Profile " + file + " has an incorrect length considering sampled at 60 or at 600 or at 900 seconds")
+            print("    Profile " + file +
+                  " has an incorrect length considering sampled at 60 or at 600 or at 900 seconds")
         timearray = df_setpoint.index.values
         qarray = df_setpoint['flow'].values
         dhw_use = np.trapz(y=qarray, x=timearray)
         if dhw_use < 15.0:
             pass
         else:
-            print("    Profile " + file + " has a draw-off of " + str(round(dhw_use/365.0,0)) + " l/day")
+            print("    Profile " + file + " has a draw-off of " +
+                  str(round(dhw_use/365.0, 0)) + " l/day")
             dhw_check += 1
-    print(str(dhw_check) + " out of " + str(number_of_profiles) + " profiles have a draw-off smaller than 15 l/day, being " + str(round(dhw_check/number_of_profiles*100,1)) + " percent")
+    print(str(dhw_check) + " out of " + str(number_of_profiles) + " profiles have a draw-off smaller than 15 l/day, being " +
+          str(round(dhw_check/number_of_profiles*100, 1)) + " percent")
 
-def remove_profiles(ids, strobe_path = "C:/Users/u0132350/Documents/StROBe_profiles/"):
+
+def remove_profiles(ids, strobe_path="C:/Users/u0132350/Documents/StROBe_profiles/"):
     for file in os.listdir(strobe_path):
         if os.path.isfile(strobe_path + file):
             id = file.split("_", 1)[0]
@@ -238,8 +270,10 @@ def remove_profiles(ids, strobe_path = "C:/Users/u0132350/Documents/StROBe_profi
                 print(str(id) + " will be removed")
                 os.remove(strobe_path+file)
 
+
 def move_profiles(oldpath="C:/Users/u0132350/Documents/StROBe/Profiles/", newpath="D:\Ina\TEASER/teaser\data\input\inputdata\occupancydata/"):
-    outputfiles= [file for file in os.listdir(oldpath) if os.path.isfile(resultpath+file) and file.endswith(".txt") ]
+    outputfiles = [file for file in os.listdir(oldpath) if os.path.isfile(
+        resultpath+file) and file.endswith(".txt")]
     for outputfile in outputfiles:
         os.rename(oldpath+outputfile, newpath+outputfile)
 
@@ -247,7 +281,7 @@ def move_profiles(oldpath="C:/Users/u0132350/Documents/StROBe/Profiles/", newpat
 if __name__ == '__main__':
     resultpath = "C:/Users/u0132350/Documents/StROBe/Profiles/"
     # First generate multiple profiles. In the process, they will be in separate folders, but by the end, they are moved to 1 folder
-    generate_multiple_profiles(number_of_profiles = 1, resultpath = resultpath)#
+    generate_multiple_profiles(number_of_profiles=1, resultpath=resultpath)
     # If you had a small error or so and it did not finish properly, then you can move the profile by using this function
     '''rename_files(resultpath= resultpath)#'''
     # After that, you want to have the proper IDs. So, you detect the household size and put them in 1 folder per household size.
@@ -259,7 +293,7 @@ if __name__ == '__main__':
     # Remove these profiles
     '''remove_profiles(ids = ['2'], strobe_path = resultpath)#'''
     # However, now there are gaps in the IDs, so rerun this function to you have the proper numbering of the profiles
-    '''rename_ids(resultpath = resultpath)'''#
+    '''rename_ids(resultpath = resultpath)'''
     # Move profiles to TEASER
     '''move_profiles(oldpath="C:/Users/u0132350/Documents/Profiles/", newpath="D:\Ina\TEASER/teaser\data\input\inputdata\occupancydata/")'''
 
